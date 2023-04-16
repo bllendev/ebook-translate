@@ -33,4 +33,4 @@ COPY . .
 EXPOSE 80
 
 # Run Uvicorn server when the container launches
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "ebook_translate.application:app", "--host", "0.0.0.0", "--port", "80"]
