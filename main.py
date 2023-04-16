@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-import tensorflow as tf
+# import tensorflow as tf
 from transformers import TFAutoModelForSeq2SeqLM, AutoTokenizer
 
 app = FastAPI()
@@ -9,21 +9,27 @@ app = FastAPI()
 tokenizer = AutoTokenizer.from_pretrained("Helsinki-NLP/opus-mt-en-es")
 model = TFAutoModelForSeq2SeqLM.from_pretrained("Helsinki-NLP/opus-mt-en-es")
 
+
 class TranslationInput(BaseModel):
     text: str
 
+
 @app.post("/translate")
 async def translate(input: TranslationInput):
+    """
+    ex to call locally: 
+    curl -X POST "http://localhost:8000/translate" -H "accept: application/json" -H "Content-Type: application/json" -d '{"text":"Hello, how are you?"}'
+    """
     try:
         # Tokenize the input text
-        # tokens = tokenizer.encode(input.text, return_tensors="tf")
+        tokens = tokenizer.encode(input.text, return_tensors="tf")
 
-        # # Perform the translation
-        # translation_ids = model.generate(tokens)
+        # Perform the translation
+        translation_ids = model.generate(tokens)
 
-        # # Decode the translated tokens
-        # translated_text = tokenizer.decode(translation_ids[0])
+        # Decode the translated tokens
+        translated_text = tokenizer.decode(translation_ids[0])
 
-        return {"translated_text": "this is ideally some translated text !!!!!"}
+        return {"translated_text": translated_text}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

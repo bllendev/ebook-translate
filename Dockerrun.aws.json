@@ -1,0 +1,14 @@
+{
+    "AWSEBDockerrunVersion": "1",
+    "Image": {
+      "Name": "bllen/ebook-translate:latest",
+      "Update": "true"
+    },
+    "Ports": [
+      {
+        "ContainerPort": "9000"
+      }
+    ],
+    "Volumes": [],
+  "Logging": "/var/log/nginx"
+}

@@ -1,22 +1,36 @@
-# Use the official Python image as the base image
-FROM python:3.9
+# Use the official NVIDIA CUDA image as a parent image
+FROM nvidia/cuda:12.1.0-runtime-ubuntu22.04
 
-# Set the working directory
+# Set working directory
 WORKDIR /app
 
-# Copy the Pipfile and Pipfile.lock into the container
-COPY Pipfile Pipfile.lock ./
+# Install any needed packages specified in requirements.txt
+COPY requirements.txt .
 
-RUN /usr/local/bin/python -m pip install --upgrade pip
+# Set the environment variable to prevent interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
 
-# Install pipenv and the required packages
-RUN pip install --no-cache-dir pipenv && pipenv install --ignore-pipfile --deploy --system
+# Install Python 3.8, other dependencies, and NVIDIA libraries
+RUN apt-get update && apt-get install -y \
+  software-properties-common \
+  && add-apt-repository ppa:deadsnakes/ppa \
+  && apt-get update \
+  && apt-get install -y \
+  python3.8 \
+  python3-pip \
+  libcudnn8 \
+  libcudnn8-dev \
+  && rm -rf /var/lib/apt/lists/* \
+  && pip3 install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application code into the container
+# Set the environment variable for TensorFlow to use the GPU
+ENV TF_FORCE_GPU_ALLOW_GROWTH=true
+
+# Copy the application files
 COPY . .
 
-# Expose the FastAPI application port
-EXPOSE 8000
+# Make port 80 available to the world outside this container
+EXPOSE 80
 
-# Start the FastAPI application using Uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run Uvicorn server when the container launches
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "80"]

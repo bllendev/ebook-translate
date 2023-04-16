@@ -6,14 +6,17 @@ name = "pypi"
 [packages]
 fastapi = "*"
 uvicorn = "*"
-gunicorn = "*"
+httpx = "*"
 pydantic = "*"
-tensorflow = "*"
 transformers = {extras = ["sentencepiece"], version = "*"}
-numpy = "*"
-scipy = "*"
+tensorflow = "*"
+celery = "*"
 
 [dev-packages]
+awscli = "*"
+awsebcli = "*"
 
 [requires]
 python_version = "3.9"
+
+
